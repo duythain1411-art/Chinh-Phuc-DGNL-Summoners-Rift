@@ -45,7 +45,7 @@
         async function loadQuestions() {
             try {
                 // Lấy dữ liệu từ file trong thư mục Kho-Bau-Vat-Pham
-                const response = await fetch('Kho-Bau-Vat-Pham/De-Toan-TFT-Style.md');
+                const response = await fetch('./Kho-Bau-Vat-Pham/De-Toan-TFT-Style.md');
                 const text = await response.text();
                 
                 // Tách dòng và xử lý quy tắc dấu gạch đứng |
