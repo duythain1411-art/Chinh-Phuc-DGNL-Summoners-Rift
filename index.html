@@ -3,37 +3,112 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Summoner's Rift ĐGNL</title>
+    <title>Đấu Trường ĐGNL Pro</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
-        body { background-color: #010a13; color: #cdbe91; }
+        body { background-color: #010a13; color: #cdbe91; font-family: sans-serif; }
         .lol-border { border: 2px solid #785a28; box-shadow: 0 0 15px #785a28; }
-        #hp-fill { transition: width 0.5s ease-in-out; background: linear-gradient(90deg, #ff0000, #ff5e5e); }
+        #hp-fill { transition: width 0.5s ease; background: linear-gradient(90deg, #ff0000, #ff5e5e); }
     </style>
 </head>
-<body class="flex flex-col items-center justify-center min-h-screen p-4">
-    <div class="w-full max-w-md text-center">
-        <h1 class="text-2xl font-bold mb-6 text-yellow-500 uppercase tracking-widest">Đấu Trường Trí Tuệ</h1>
+<body class="flex flex-col items-center justify-center min-h-screen p-4 text-center">
+    <div class="w-full max-w-md">
+        <h1 class="text-2xl font-bold mb-6 text-yellow-500 uppercase">⚔️ ĐẤU TRƯỜNG TỰ ĐỘNG</h1>
         
         <div class="mb-8">
             <div class="flex justify-between text-xs mb-1 font-bold">
-                <span>BOSS: ĐỀ THI ĐGNL 2026</span>
+                <span id="boss-name">Đang triệu hồi Boss...</span>
                 <span id="hp-text">100/100 HP</span>
             </div>
-            <div class="w-full h-6 bg-gray-800 border border-gray-600 p-0.5 rounded-sm">
+            <div class="w-full h-5 bg-gray-800 border border-gray-600 p-0.5">
                 <div id="hp-fill" class="h-full w-full"></div>
             </div>
         </div>
 
-        <div class="lol-border bg-gray-900 p-6 rounded-lg">
-            <p id="msg" class="mb-6 italic text-gray-400 font-serif">"Chào mừng chiến thần! Hãy chọn kỹ năng để tấn công Boss."</p>
+        <div id="battle-box" class="lol-border bg-gray-900 p-6 rounded-lg min-h-[250px] flex flex-col justify-center">
+            <div id="status">Đang kết nối kho báu...</div>
+            <div id="quiz-area" class="hidden text-left">
+                <p id="question" class="mb-6 font-bold text-white text-lg"></p>
+                <div id="options" class="grid grid-cols-1 gap-3"></div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let database = [];
+        let hp = 100;
+        let currentIdx = 0;
+
+        async function loadQuestions() {
+            try {
+                // Lấy dữ liệu từ file trong thư mục Kho-Bau-Vat-Pham
+                const response = await fetch('Kho-Bau-Vat-Pham/De-Toan-TFT-Style.md');
+                const text = await response.text();
+                
+                // Tách dòng và xử lý quy tắc dấu gạch đứng |
+                const lines = text.split('\n').filter(l => l.trim().includes('|'));
+                database = lines.map(line => {
+                    const parts = line.split('|');
+                    return { 
+                        question: parts[0], 
+                        answers: parts[1].split(','), 
+                        correct: parseInt(parts[2]) 
+                    };
+                });
+
+                if(database.length > 0) {
+                    document.getElementById('status').classList.add('hidden');
+                    document.getElementById('quiz-area').classList.remove('hidden');
+                    document.getElementById('boss-name').innerText = "BOSS: MA TRẬN ĐỀ THI";
+                    renderQuestion();
+                } else {
+                    document.getElementById('status').innerText = "Kho báu trống! Hãy kiểm tra file .md";
+                }
+            } catch (e) {
+                document.getElementById('status').innerText = "Lỗi: Không kết nối được kho báu!";
+                console.error(e);
+            }
+        }
+
+        function renderQuestion() {
+            const data = database[currentIdx];
+            document.getElementById('question').innerText = data.question;
+            const optionsDiv = document.getElementById('options');
+            optionsDiv.innerHTML = '';
             
-            <div class="grid grid-cols-1 gap-4">
-                <button onclick="hit(20, 'Bạn đã Farm 20 câu trắc nghiệm!')" class="p-3 border border-yellow-700 bg-gray-800 hover:bg-yellow-900 font-bold">
-                    ⚔️ SKILL Q: FARM LÍNH (-20HP)
-                </button>
-                <button onclick="hit(50, 'PENTAKILL! Giải đề thi thử thành công!')" class="p-3 border border-yellow-700 bg-gray-800 hover:bg-yellow-900 font-bold text-red-400">
-                    🔥 SKILL R: DIỆT BARON (-50HP)
+            data.answers.forEach((ans, i) => {
+                const btn = document.createElement('button');
+                btn.className = "p-3 border border-gray-700 bg-gray-800 hover:bg-yellow-900 text-left text-sm text-gray-200";
+                btn.innerText = `${String.fromCharCode(65 + i)}. ${ans.trim()}`;
+                btn.onclick = () => checkAnswer(i);
+                optionsDiv.appendChild(btn);
+            });
+        }
+
+        function checkAnswer(idx) {
+            if(idx === database[currentIdx].correct) {
+                hp -= Math.ceil(100 / database.length);
+                alert("✨ CHÍNH XÁC! Boss bị trúng đòn.");
+            } else {
+                alert("💀 SAI RỒI! Bạn bị Boss phản công.");
+            }
+            
+            document.getElementById('hp-fill').style.width = Math.max(0, hp) + '%';
+            document.getElementById('hp-text').innerText = Math.max(0, hp) + '/100 HP';
+            
+            if(hp <= 0) {
+                alert("VICTORY! Bạn đã dọn sạch kho báu!");
+                location.reload();
+            } else {
+                currentIdx = (currentIdx + 1) % database.length;
+                renderQuestion();
+            }
+        }
+
+        loadQuestions();
+    </script>
+</body>
+</html>
                 </button>
             </div>
         </div>
