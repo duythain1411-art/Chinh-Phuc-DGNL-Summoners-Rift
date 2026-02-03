@@ -1,86 +1,32 @@
-const questionEl = document.getElementById("question");
-const answersEl  = document.getElementById("answers");
-const scoreEl    = document.getElementById("score");
-const hpFill     = document.getElementById("hp-fill");
-const tagEl      = document.getElementById("question-tag");
+// ===== STEP 1: KIỂM TRA CLICK ĐƯỢC CHƯA =====
 
-let score = 0;
 let hp = 100;
+let score = 0;
 
-let questions = [];
-let current = null;
+const hpBar = document.getElementById("hp-bar");
+const scoreEl = document.getElementById("score");
 
-// ===== LOAD JSON =====
-async function loadQuestions(){
-  const res = await fetch("data/questions.json");
-  questions = await res.json();
-  nextQuestion();
-}
+// lấy đáp án
+const options = document.querySelectorAll(".option");
 
-// ===== RANDOM CÂU =====
-function nextQuestion(){
-  if(questions.length === 0){
-    endGame(true);
-    return;
-  }
-  const idx = Math.floor(Math.random() * questions.length);
-  current = questions.splice(idx,1)[0];
-  render(current);
-}
+// giả sử đáp án đúng là cái thứ 3
+const correctIndex = 2;
 
-// ===== HIỂN THỊ =====
-function render(q){
-  tagEl.textContent = q.tag;
-  questionEl.textContent = q.question;
-  answersEl.innerHTML = "";
+options.forEach((opt, index) => {
+  opt.addEventListener("click", () => {
 
-  q.answers.forEach((a,i)=>{
-    const btn = document.createElement("button");
-    btn.className = "option p-3 rounded text-left";
-    btn.textContent = a;
-    btn.onclick = ()=> checkAnswer(i);
-    answersEl.appendChild(btn);
-  });
-}
+    // khóa click
+    options.forEach(o => o.style.pointerEvents = "none");
 
-// ===== KIỂM TRA =====
-function checkAnswer(i){
-  if(i === current.correct){
-    score += 10;
-    scoreEl.textContent = `Điểm: ${score}`;
-    flash("✔ ĐÚNG", "#00ff99");
-  }else{
-    hp -= 20;
-    hpFill.style.width = hp + "%";
-    flash("✖ SAI", "#ff4d4d");
-    if(hp <= 0){
-      endGame(false);
-      return;
+    if (index === correctIndex) {
+      opt.style.background = "#22c55e";
+      score += 10;
+      scoreEl.textContent = "Điểm: " + score;
+    } else {
+      opt.style.background = "#ef4444";
+      hp -= 20;
+      if (hp < 0) hp = 0;
+      hpBar.style.width = hp + "%";
     }
-  }
-  setTimeout(nextQuestion, 700);
-}
-
-// ===== HIỆU ỨNG =====
-function flash(text,color){
-  questionEl.textContent = text;
-  questionEl.style.color = color;
-  setTimeout(()=> questionEl.style.color="",500);
-}
-
-// ===== KẾT THÚC =====
-function endGame(win){
-  const overlay = document.getElementById("overlay");
-  const box = document.getElementById("result-box");
-  const title = document.getElementById("result-title");
-  const detail = document.getElementById("result-detail");
-
-  overlay.classList.add("show");
-  box.classList.add(win ? "victory" : "defeat");
-
-  title.textContent = win ? "CHIẾN THẮNG" : "THẤT BẠI";
-  detail.textContent = `Điểm đạt được: ${score}`;
-}
-
-// ===== START =====
-loadQuestions();
+  });
+});
