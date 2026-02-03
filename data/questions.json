@@ -1,0 +1,38 @@
+[
+  {
+    "id": 1,
+    "subject": "math",
+    "level": "easy",
+    "tag": "Toán | Easy | ĐGNL",
+    "question": "Đạo hàm của hàm số y = x² là:",
+    "answers": ["x", "2x", "x²", "2"],
+    "correct": 1
+  },
+  {
+    "id": 2,
+    "subject": "logic",
+    "level": "easy",
+    "tag": "Logic | Easy | ĐGNL",
+    "question": "Số tiếp theo của dãy: 2, 4, 8, 16, ?",
+    "answers": ["18", "24", "32", "20"],
+    "correct": 2
+  },
+  {
+    "id": 3,
+    "subject": "math",
+    "level": "medium",
+    "tag": "Toán | Medium | ĐGNL",
+    "question": "Giá trị lớn nhất của hàm y = -x² + 4x + 1 là:",
+    "answers": ["5", "4", "1", "0"],
+    "correct": 0
+  },
+  {
+    "id": 4,
+    "subject": "logic",
+    "level": "hard",
+    "tag": "Logic | Hard | ĐGNL",
+    "question": "Nếu hôm nay là thứ Tư, thì sau 100 ngày nữa là thứ mấy?",
+    "answers": ["Thứ Sáu", "Thứ Bảy", "Chủ Nhật", "Thứ Hai"],
+    "correct": 1
+  }
+]
