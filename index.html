@@ -3,7 +3,12 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Luyện Thi ĐGNL – Offline</title>
+
+<title>Luyện Thi ĐGNL Offline</title>
+
+<!-- PWA -->
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#facc15">
 
 <style>
 :root{
@@ -14,7 +19,7 @@
   --bad:#ef4444;
   --muted:#9ca3af;
 }
-*{box-sizing:border-box;font-family:system-ui}
+*{box-sizing:border-box;font-family:system-ui,-apple-system}
 body{
   margin:0;
   background:radial-gradient(circle at top,#0b1533,#020617);
@@ -27,9 +32,6 @@ body{
   width:100%;
   max-width:520px;
   padding:16px;
-}
-button{
-  cursor:pointer;
 }
 .top{
   display:flex;
@@ -79,11 +81,20 @@ button{
   border-radius:12px;
   background:#0f1c3f;
   border:1px solid #1e3a8a;
+  cursor:pointer;
 }
 .answer.correct{background:rgba(34,197,94,.2);border-color:var(--good)}
 .answer.wrong{background:rgba(239,68,68,.2);border-color:var(--bad)}
 .center{text-align:center}
 .hidden{display:none}
+button{
+  padding:12px 18px;
+  border-radius:12px;
+  border:none;
+  background:var(--accent);
+  font-weight:700;
+  cursor:pointer;
+}
 </style>
 </head>
 
@@ -99,20 +110,21 @@ button{
 
 <div class="card" id="game">
   <div class="tag" id="tag">ĐGNL | OFFLINE</div>
-  <div class="question" id="question">...</div>
+  <div class="question" id="question"></div>
   <div class="answers" id="answers"></div>
 </div>
 
 <div class="card hidden center" id="end">
-  <h2>⏱ HẾT GIỜ / HOÀN THÀNH</h2>
+  <h2>⏱ KẾT THÚC</h2>
   <p>Điểm đạt được: <b id="finalScore"></b></p>
+  <p>Điểm cao nhất: <b id="bestScore"></b></p>
   <button onclick="location.reload()">Làm lại</button>
 </div>
 
 </div>
 
 <script>
-/* ================== SINH 1000+ CÂU ================== */
+/* ========= SINH 1000+ CÂU ========= */
 function genQuestions(n=1000){
   const qs=[];
   for(let i=0;i<n;i++){
@@ -130,7 +142,7 @@ function genQuestions(n=1000){
 
 const QUESTIONS=genQuestions(1000);
 
-/* ================== LOGIC ================== */
+/* ========= BIẾN ========= */
 let index=0, score=0, lock=false;
 const qEl=document.getElementById("question");
 const aEl=document.getElementById("answers");
@@ -140,8 +152,9 @@ const progressEl=document.getElementById("progress");
 const endEl=document.getElementById("end");
 const gameEl=document.getElementById("game");
 const finalScore=document.getElementById("finalScore");
+const bestScoreEl=document.getElementById("bestScore");
 
-/* ================== TIMER 90 PHÚT ================== */
+/* ========= TIMER 90 PHÚT ========= */
 let time=90*60;
 const timerEl=document.getElementById("timer");
 const tInt=setInterval(()=>{
@@ -155,10 +168,11 @@ const tInt=setInterval(()=>{
   }
 },1000);
 
+/* ========= GAME ========= */
 function load(){
   if(index>=QUESTIONS.length){finish();return;}
   const q=QUESTIONS[index];
-  tagEl.textContent=q.tag+` | Câu ${index+1}`;
+  tagEl.textContent=`${q.tag} | Câu ${index+1}`;
   qEl.textContent=q.q;
   aEl.innerHTML="";
   q.a.forEach((txt,i)=>{
@@ -176,7 +190,7 @@ function choose(i,c,el){
   lock=true;
   if(i===c){
     el.classList.add("correct");
-    score+=1;
+    score++;
   }else{
     el.classList.add("wrong");
     aEl.children[c].classList.add("correct");
@@ -193,10 +207,18 @@ function finish(){
   gameEl.classList.add("hidden");
   endEl.classList.remove("hidden");
   finalScore.textContent=score;
-  localStorage.setItem("dgnl_best",Math.max(score,localStorage.getItem("dgnl_best")||0));
+  const best=Math.max(score,localStorage.getItem("dgnl_best")||0);
+  localStorage.setItem("dgnl_best",best);
+  bestScoreEl.textContent=best;
 }
 
 load();
+
+/* ========= SERVICE WORKER ========= */
+if ("serviceWorker" in navigator) {
+  navigator.serviceWorker.register("service-worker.js");
+}
 </script>
+
 </body>
 </html>
