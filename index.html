@@ -1,81 +1,99 @@
 <!DOCTYPE html>
 <html lang="vi">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Chinh Phục ĐGNL 2025–2026</title>
-  <link rel="stylesheet" href="css/style.css">
- <script src="https://cdn.tailwindcss.com"></script> 
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Chinh Phục ĐGNL</title>
+
+  <!-- CSS -->
+  <link rel="stylesheet" href="css/style.css" />
+
+  <!-- Tailwind CDN (nếu bạn đang dùng class tailwind) -->
+  <script src="https://cdn.tailwindcss.com"></script>
 </head>
 
-<body class="min-h-screen flex flex-col items-center p-4">
+<body class="min-h-screen bg-gradient-to-b from-[#020617] to-[#020617] text-white flex items-center justify-center">
 
-<!-- HEADER -->
-<div class="text-center mb-5">
-  <h1 class="lol text-3xl text-yellow-500 italic">
-    CHINH PHỤC ĐGNL
-  </h1>
-  <p class="text-sm text-gray-400">
-    Lộ trình ĐGNL 2025–2026 | LoL & TFT
-  </p>
-</div>
+  <div class="w-full max-w-xl p-4 space-y-4">
 
-<!-- STATUS -->
-<div class="w-full max-w-md bg-[#091428] p-4 border border-[#c8aa6e] rounded mb-4">
-  <div class="flex justify-between text-sm">
-    <span id="mode">Chế độ: Ôn tập</span>
-    <span id="score">Điểm: 0</span>
+    <!-- ===== TOP BOX ===== -->
+    <div class="border-2 border-yellow-600 rounded-xl p-4 text-center bg-[#020617]">
+      <button
+        onclick="location.reload()"
+        class="px-6 py-2 bg-yellow-600 text-black font-bold rounded hover:bg-yellow-500 transition">
+        Chơi lại
+      </button>
+    </div>
+
+    <!-- ===== STATUS BAR ===== -->
+    <div class="flex justify-between text-sm mb-1">
+      <span id="mode">Chế độ: Ôn tập</span>
+      <span id="score">Điểm: 0</span>
+    </div>
+
+    <!-- ===== HP BAR ===== -->
+    <div class="w-full bg-gray-700 h-4 rounded overflow-hidden">
+      <div
+        id="hp-fill"
+        class="h-full bg-gradient-to-r from-red-500 to-yellow-400 transition-all duration-500"
+        style="width: 100%;">
+      </div>
+    </div>
+
+    <!-- ===== QUESTION BOX ===== -->
+    <div class="w-full bg-[#0a1428] p-5 border-t-2 border-[#c8aa6e] rounded shadow-lg">
+
+      <!-- TAG -->
+      <div
+        id="question-tag"
+        class="text-xs text-yellow-500 uppercase mb-2">
+        Đang tải câu hỏi...
+      </div>
+
+      <!-- QUESTION -->
+      <div
+        id="question"
+        class="text-lg font-semibold mb-4">
+        ...
+      </div>
+
+      <!-- ANSWERS (JS SẼ TỰ TẠO BUTTON .option) -->
+      <div
+        id="answers"
+        class="flex flex-col gap-3">
+        <!-- buttons sinh bằng JS -->
+      </div>
+    </div>
   </div>
-<!-- HP BAR -->
-<div class="w-full bg-gray-700 h-4 rounded overflow-hidden mt-2">
+
+  <!-- ===== OVERLAY KẾT QUẢ ===== -->
   <div
-    id="hp-bar"
-    class="h-full bg-gradient-to-r from-red-500 to-yellow-400 transition-all duration-500"
-    style="width: 100%">
-  </div>
-</div>
-  </div>
-</div>
+    id="overlay"
+    class="fixed inset-0 bg-black bg-opacity-70 hidden items-center justify-center">
 
-<!-- QUESTION BOX -->
-<div class="w-full max-w-md bg-[#0a1428] p-5 border-t-2 border-[#c8aa6e] rounded shadow-lg">
-  <div id="question-tag"
-       class="text-xs text-yellow-500 uppercase mb-2">
-       Đang tải câu hỏi…
-  </div>
-  <div id="question"
-       class="text-lg mb-4">
-       Hệ thống đang khởi tạo dữ liệu ĐGNL
-  </div>
-  <div id="answers" class="grid gap-3">
-    <!-- đáp án sẽ được JS gắn vào -->
-  </div>
-</div>
+    <div
+      id="result-box"
+      class="p-6 rounded-xl text-center w-72">
 
-<!-- RESULT OVERLAY -->
-<div id="overlay" class="fixed inset-0 items-center justify-center z-50">
-  <div id="result-box"
-       class="bg-[#091428] border-4 border-[#c8aa6e] p-6 rounded text-center pop">
-    <div id="result-title"
-         class="lol text-4xl mb-2">
+      <h2
+        id="result-title"
+        class="text-2xl font-bold mb-2">
+      </h2>
+
+      <p
+        id="result-detail"
+        class="mb-4">
+      </p>
+
+      <button
+        onclick="location.reload()"
+        class="px-4 py-2 bg-yellow-600 text-black font-bold rounded">
+        Chơi lại
+      </button>
     </div>
-    <div id="result-detail"
-         class="text-sm mb-4">
-    </div>
-    <button onclick="location.reload()"
-            class="px-5 py-2 bg-[#c89b3c] text-black font-bold rounded">
-      Chơi lại
-    </button>
   </div>
-</div>
 
-<!-- AUDIO (để trống, bước sau gắn file) -->
-<audio id="snd-correct"></audio>
-<audio id="snd-wrong"></audio>
-<audio id="snd-victory"></audio>
-<audio id="snd-defeat"></audio>
-
-  <script type="module" src="js/main.js"></script>
-  
+  <!-- JS -->
+  <script src="js/main.js"></script>
 </body>
 </html>
