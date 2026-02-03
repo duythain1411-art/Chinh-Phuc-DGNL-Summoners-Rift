@@ -1,150 +1,130 @@
 <!DOCTYPE html>
 <html lang="vi">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Chinh Phục ĐGNL - Summoner's Rift</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <style>
-        @import url('https://fonts.googleapis.com/css2?family=Beaufort+for+LOL:wght@700&display=swap');
-        body { font-family: 'Helvetica Neue', sans-serif; background: #010a13; color: #f0e6d2; }
-        .lol-header { font-family: 'Beaufort for LOL', serif; text-transform: uppercase; letter-spacing: 2px; }
-        #hp-fill { transition: width 0.4s ease-out; box-shadow: 0 0 15px #ff0000; }
-        .rank-icon { width: 60px; height: 60px; object-fit: contain; }
-        .option-btn:hover { border-color: #c89b3c; background: #1e2328; color: #c8aa6e; }
-    </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Chinh Phục ĐGNL 2025–2026</title>
+
+<script src="https://cdn.tailwindcss.com"></script>
+
+<style>
+body{
+  background:#010a13;
+  color:#f0e6d2;
+  font-family: Arial, Helvetica, sans-serif;
+}
+.lol{
+  font-family: serif;
+  font-weight: 800;
+  letter-spacing: 1px;
+}
+.option{
+  background:#1e2328;
+  border:1px solid #1e2328;
+  transition:.2s;
+}
+.option:hover{
+  border-color:#c89b3c;
+  background:#252a30;
+}
+#hp-fill{
+  transition:width .5s ease;
+}
+#overlay{
+  display:none;
+}
+.show{
+  display:flex;
+}
+.victory{
+  background:radial-gradient(circle,#ffd700,#091428);
+}
+.defeat{
+  background:radial-gradient(circle,#8b0000,#010a13);
+}
+.pop{
+  animation:pop .5s forwards;
+}
+@keyframes pop{
+  from{transform:scale(.6);opacity:0}
+  to{transform:scale(1);opacity:1}
+}
+</style>
 </head>
+
 <body class="min-h-screen flex flex-col items-center p-4">
 
-    <div class="flex flex-col items-center mb-6">
-        <img src="https://brand.riotgames.com/static/a91000434f1b533e4d9f6973f5a04473/01_LoL_Logo_Fixed.png" alt="LoL Logo" class="w-48 mb-2">
-        <h1 class="lol-header text-3xl text-yellow-500 italic uppercase">Chinh Phục ĐGNL</h1>
+<!-- HEADER -->
+<div class="text-center mb-5">
+  <h1 class="lol text-3xl text-yellow-500 italic">
+    CHINH PHỤC ĐGNL
+  </h1>
+  <p class="text-sm text-gray-400">
+    Lộ trình ĐGNL 2025–2026 | LoL & TFT
+  </p>
+</div>
+
+<!-- STATUS -->
+<div class="w-full max-w-md bg-[#091428] p-4 border border-[#c8aa6e] rounded mb-4">
+  <div class="flex justify-between text-sm">
+    <span id="mode">Chế độ: Ôn tập</span>
+    <span id="score">Điểm: 0</span>
+  </div>
+  <div class="h-3 bg-gray-800 mt-2 rounded">
+    <div id="hp-fill" class="h-full bg-red-600 w-full rounded"></div>
+  </div>
+</div>
+
+<!-- QUESTION BOX -->
+<div class="w-full max-w-md bg-[#0a1428] p-5 border-t-2 border-[#c8aa6e] rounded shadow-lg">
+  <div id="question-tag"
+       class="text-xs text-yellow-500 uppercase mb-2">
+       Đang tải câu hỏi…
+  </div>
+  <div id="question"
+       class="text-lg mb-4">
+       Hệ thống đang khởi tạo dữ liệu ĐGNL
+  </div>
+  <div id="answers" class="grid gap-3">
+    <!-- đáp án sẽ được JS gắn vào -->
+  </div>
+</div>
+
+<!-- RESULT OVERLAY -->
+<div id="overlay" class="fixed inset-0 items-center justify-center z-50">
+  <div id="result-box"
+       class="bg-[#091428] border-4 border-[#c8aa6e] p-6 rounded text-center pop">
+    <div id="result-title"
+         class="lol text-4xl mb-2">
     </div>
-
-    <div class="w-full max-w-md bg-[#091428] p-4 rounded border border-[#c8aa6e] mb-6 flex items-center shadow-2xl">
-        <div id="rank-display" class="flex items-center gap-4">
-            <img id="rank-img" src="https://raw.communitydragon.org/latest/plugins/rcp-fe-lol-static-assets/global/default/images/ranked-emblems/emblem-bronze.png" class="rank-icon">
-            <div>
-                <p id="rank-name" class="text-xl font-bold uppercase text-white leading-none">Đồng Đoàn</p>
-                <p id="lp-score" class="text-blue-400 font-semibold mt-1">0 LP</p>
-            </div>
-        </div>
-        <div class="ml-auto flex flex-col items-end">
-            <span class="text-[10px] text-gray-400 uppercase tracking-widest">Nhiệm vụ: Phá Trụ</span>
-            <span id="streak-count" class="text-xs text-yellow-500 font-bold">Chuỗi thắng: 0</span>
-        </div>
+    <div id="result-detail"
+         class="text-sm mb-4">
     </div>
+    <button onclick="location.reload()"
+            class="px-5 py-2 bg-[#c89b3c] text-black font-bold rounded">
+      Chơi lại
+    </button>
+  </div>
+</div>
 
-    <div class="w-full max-w-md mb-8">
-        <div class="flex justify-between items-end mb-2">
-            <span class="text-red-500 font-bold uppercase text-xs tracking-tighter italic">Đang công trụ: Nexus Crystal</span>
-            <span id="hp-text" class="text-sm font-black text-red-500">100 / 100 HP</span>
-        </div>
-        <div class="h-5 w-full bg-gray-900 rounded-sm border border-gray-700 p-0.5">
-            <div id="hp-fill" class="bg-gradient-to-r from-red-800 to-red-500 h-full w-full"></div>
-        </div>
-    </div>
+<!-- AUDIO (để trống, bước sau gắn file) -->
+<audio id="snd-correct"></audio>
+<audio id="snd-wrong"></audio>
+<audio id="snd-victory"></audio>
+<audio id="snd-defeat"></audio>
 
-    <div class="w-full max-w-md bg-[#0a1428] border-t-2 border-[#c8aa6e] p-6 shadow-2xl relative">
-        <div id="subject-tag" class="absolute -top-3 left-4 bg-[#c89b3c] text-black px-3 py-0.5 text-[10px] font-black uppercase italic">Toán Học</div>
-        <h2 id="question-text" class="text-lg font-medium leading-relaxed mb-6 mt-2">Đang tải dữ liệu từ Summoner's Rift...</h2>
-        <div id="options" class="grid grid-cols-1 gap-3"></div>
-    </div>
+<!-- SCRIPT PLACEHOLDER -->
+<script>
+/*
+  BƯỚC 1:
+  - File này CHỈ là khung giao diện
+  - KHÔNG viết logic ở đây
 
-    <audio id="sound-correct" src="https://www.myinstants.com/media/sounds/tuturu_1.mp3"></audio>
-    <audio id="sound-victory" src="https://www.myinstants.com/media/sounds/pentakill-sound-effect.mp3"></audio>
-    <audio id="sound-rankup" src="https://www.myinstants.com/media/sounds/level-up-pings-league-of-legends.mp3"></audio>
+  BƯỚC 2:
+  - Ta sẽ tạo thư mục js/
+  - Gắn: <script type="module" src="js/main.js"></script>
+*/
+</script>
 
-    <script>
-        // Kho đề mở rộng đa môn (Lanes)
-        const database = [
-            { s: "Toán Học", q: "Đạo hàm của hàm số y = x^2 là gì?", a: ["x", "2x", "x^2", "2"], c: 1 },
-            { s: "Vật Lý", q: "Trong chân không, tốc độ ánh sáng xấp xỉ bao nhiêu?", a: ["3.10^8 m/s", "2.10^8 m/s", "3.10^7 m/s", "1.10^8 m/s"], c: 0 },
-            { s: "Tiếng Anh", q: "What is the synonym of 'Victory'?", a: ["Defeat", "Triumph", "Failure", "Loss"], c: 1 },
-            { s: "Toán Học", q: "Hàm số y = 2x + 1 có hệ số góc là?", a: ["1", "2", "3", "0"], c: 1 },
-            { s: "Ngữ Văn", q: "Từ nào sau đây viết ĐÚNG chính tả?", a: ["Xoay xở", "Xoay sở", "Sơ suất", "Suất sắc"], c: 0 },
-            { s: "Toán Học", q: "Số tiếp theo của dãy 2, 4, 8 là?", a: ["10", "12", "16", "14"], c: 2 },
-            { s: "Vật Lý", q: "Đơn vị của điện trở là gì?", a: ["Vôn (V)", "Ampe (A)", "Ohm (Ω)", "Watt (W)"], c: 2 },
-            { s: "Tiếng Anh", q: "Complete: 'League of Legends is a ____ game.'", a: ["MOBA", "FPS", "RPG", "RTS"], c: 0 },
-            { s: "Toán Học", q: "Căn bậc hai của 144 là?", a: ["10", "11", "12", "13"], c: 2 },
-            { s: "Tiếng Anh", q: "Dịch từ 'Legendary' sang tiếng Việt?", a: ["Huyền thoại", "Thần thoại", "Sử thi", "Vô địch"], c: 0 }
-        ];
-
-        let currentIdx = 0;
-        let hp = 100;
-        let lp = 0;
-        let streak = 0;
-
-        const ranks = [
-            { name: "Đồng Đoàn", min: 0, img: "emblem-bronze.png" },
-            { name: "Bạc Đoàn", min: 40, img: "emblem-silver.png" },
-            { name: "Vàng Đoàn", min: 80, img: "emblem-gold.png" },
-            { name: "Bạch Kim", min: 140, img: "emblem-platinum.png" },
-            { name: "Thách Đấu", min: 200, img: "emblem-challenger.png" }
-        ];
-
-        function updateRank() {
-            let currentRank = ranks[0];
-            ranks.forEach(r => { if (lp >= r.min) currentRank = r; });
-            
-            const rankLabel = document.getElementById('rank-name');
-            const oldRank = rankLabel.innerText;
-            rankLabel.innerText = currentRank.name;
-            document.getElementById('rank-img').src = `https://raw.communitydragon.org/latest/plugins/rcp-fe-lol-static-assets/global/default/images/ranked-emblems/${currentRank.img}`;
-            
-            if (oldRank !== currentRank.name && lp > 0) {
-                document.getElementById('sound-rankup').play();
-            }
-        }
-
-        function renderQuestion() {
-            const data = database[currentIdx];
-            document.getElementById('subject-tag').innerText = data.s;
-            document.getElementById('question-text').innerText = data.q;
-            const optionsDiv = document.getElementById('options');
-            optionsDiv.innerHTML = '';
-
-            data.a.forEach((ans, i) => {
-                const btn = document.createElement('button');
-                btn.className = "option-btn p-4 text-left border border-[#1e2328] bg-[#1e2328] transition-all text-sm font-bold uppercase italic";
-                btn.innerText = `${String.fromCharCode(65 + i)}. ${ans}`;
-                btn.onclick = () => checkAnswer(i);
-                optionsDiv.appendChild(btn);
-            });
-        }
-
-        function checkAnswer(idx) {
-            if (idx === database[currentIdx].c) {
-                hp = Math.max(0, hp - (100 / database.length));
-                streak++;
-                lp += (15 + (streak * 2)); // Thưởng chuỗi thắng
-                document.getElementById('sound-correct').play();
-            } else {
-                streak = 0;
-                lp = Math.max(0, lp - 10);
-                alert("💀 THẤT BẠI! Nexus phản công bạn mất 10 LP.");
-            }
-
-            document.getElementById('hp-fill').style.width = hp + "%";
-            document.getElementById('hp-text').innerText = Math.round(hp) + " / 100 HP";
-            document.getElementById('lp-score').innerText = lp + " LP";
-            document.getElementById('streak-count').innerText = `Chuỗi thắng: ${streak}`;
-            
-            updateRank();
-
-            if (hp <= 0) {
-                document.getElementById('sound-victory').play();
-                setTimeout(() => {
-                    alert(`VICTORY! Bạn đã dọn sạch Summoner's Rift với bậc ${document.getElementById('rank-name').innerText}!`);
-                    location.reload();
-                }, 1000);
-            } else {
-                currentIdx = (currentIdx + 1) % database.length;
-                setTimeout(renderQuestion, 400);
-            }
-        }
-
-        window.onload = renderQuestion;
-    </script>
 </body>
 </html>
