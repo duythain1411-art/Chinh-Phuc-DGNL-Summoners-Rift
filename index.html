@@ -1,99 +1,202 @@
 <!DOCTYPE html>
 <html lang="vi">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Chinh Phục ĐGNL</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Luyện Thi ĐGNL – Offline</title>
 
-  <!-- CSS -->
-  <link rel="stylesheet" href="css/style.css" />
-
-  <!-- Tailwind CDN (nếu bạn đang dùng class tailwind) -->
-  <script src="https://cdn.tailwindcss.com"></script>
+<style>
+:root{
+  --bg:#020617;
+  --card:#0b1533;
+  --accent:#facc15;
+  --good:#22c55e;
+  --bad:#ef4444;
+  --muted:#9ca3af;
+}
+*{box-sizing:border-box;font-family:system-ui}
+body{
+  margin:0;
+  background:radial-gradient(circle at top,#0b1533,#020617);
+  color:white;
+  min-height:100vh;
+  display:flex;
+  justify-content:center;
+}
+.app{
+  width:100%;
+  max-width:520px;
+  padding:16px;
+}
+button{
+  cursor:pointer;
+}
+.top{
+  display:flex;
+  justify-content:space-between;
+  margin-bottom:10px;
+  font-size:15px;
+}
+.timer{
+  color:var(--accent);
+  font-weight:700;
+}
+.progress{
+  height:10px;
+  background:#374151;
+  border-radius:999px;
+  overflow:hidden;
+  margin-bottom:14px;
+}
+.progress span{
+  display:block;
+  height:100%;
+  width:0%;
+  background:linear-gradient(90deg,#ef4444,#facc15);
+  transition:.3s;
+}
+.card{
+  background:linear-gradient(180deg,#0b1533,#020617);
+  border-radius:16px;
+  padding:18px;
+  box-shadow:0 20px 40px rgba(0,0,0,.4);
+}
+.tag{
+  color:var(--accent);
+  font-size:13px;
+  margin-bottom:6px;
+}
+.question{
+  font-size:19px;
+  margin-bottom:14px;
+}
+.answers{
+  display:grid;
+  gap:10px;
+}
+.answer{
+  padding:14px;
+  border-radius:12px;
+  background:#0f1c3f;
+  border:1px solid #1e3a8a;
+}
+.answer.correct{background:rgba(34,197,94,.2);border-color:var(--good)}
+.answer.wrong{background:rgba(239,68,68,.2);border-color:var(--bad)}
+.center{text-align:center}
+.hidden{display:none}
+</style>
 </head>
 
-<body class="min-h-screen bg-gradient-to-b from-[#020617] to-[#020617] text-white flex items-center justify-center">
+<body>
+<div class="app">
 
-  <div class="w-full max-w-xl p-4 space-y-4">
+<div class="top">
+  <div>Điểm: <span id="score">0</span></div>
+  <div class="timer" id="timer">90:00</div>
+</div>
 
-    <!-- ===== TOP BOX ===== -->
-    <div class="border-2 border-yellow-600 rounded-xl p-4 text-center bg-[#020617]">
-      <button
-        onclick="location.reload()"
-        class="px-6 py-2 bg-yellow-600 text-black font-bold rounded hover:bg-yellow-500 transition">
-        Chơi lại
-      </button>
-    </div>
+<div class="progress"><span id="progress"></span></div>
 
-    <!-- ===== STATUS BAR ===== -->
-    <div class="flex justify-between text-sm mb-1">
-      <span id="mode">Chế độ: Ôn tập</span>
-      <span id="score">Điểm: 0</span>
-    </div>
+<div class="card" id="game">
+  <div class="tag" id="tag">ĐGNL | OFFLINE</div>
+  <div class="question" id="question">...</div>
+  <div class="answers" id="answers"></div>
+</div>
 
-    <!-- ===== HP BAR ===== -->
-    <div class="w-full bg-gray-700 h-4 rounded overflow-hidden">
-      <div
-        id="hp-fill"
-        class="h-full bg-gradient-to-r from-red-500 to-yellow-400 transition-all duration-500"
-        style="width: 100%;">
-      </div>
-    </div>
+<div class="card hidden center" id="end">
+  <h2>⏱ HẾT GIỜ / HOÀN THÀNH</h2>
+  <p>Điểm đạt được: <b id="finalScore"></b></p>
+  <button onclick="location.reload()">Làm lại</button>
+</div>
 
-    <!-- ===== QUESTION BOX ===== -->
-    <div class="w-full bg-[#0a1428] p-5 border-t-2 border-[#c8aa6e] rounded shadow-lg">
+</div>
 
-      <!-- TAG -->
-      <div
-        id="question-tag"
-        class="text-xs text-yellow-500 uppercase mb-2">
-        Đang tải câu hỏi...
-      </div>
+<script>
+/* ================== SINH 1000+ CÂU ================== */
+function genQuestions(n=1000){
+  const qs=[];
+  for(let i=0;i<n;i++){
+    const a=Math.floor(Math.random()*9)+1;
+    const b=Math.floor(Math.random()*9)+1;
+    qs.push({
+      tag:"TOÁN | ĐGNL",
+      q:`Giá trị của ${a} × ${b} là:`,
+      a:[a*b,a+b,a-b,a*b+1],
+      c:0
+    });
+  }
+  return qs.sort(()=>Math.random()-0.5);
+}
 
-      <!-- QUESTION -->
-      <div
-        id="question"
-        class="text-lg font-semibold mb-4">
-        ...
-      </div>
+const QUESTIONS=genQuestions(1000);
 
-      <!-- ANSWERS (JS SẼ TỰ TẠO BUTTON .option) -->
-      <div
-        id="answers"
-        class="flex flex-col gap-3">
-        <!-- buttons sinh bằng JS -->
-      </div>
-    </div>
-  </div>
+/* ================== LOGIC ================== */
+let index=0, score=0, lock=false;
+const qEl=document.getElementById("question");
+const aEl=document.getElementById("answers");
+const tagEl=document.getElementById("tag");
+const scoreEl=document.getElementById("score");
+const progressEl=document.getElementById("progress");
+const endEl=document.getElementById("end");
+const gameEl=document.getElementById("game");
+const finalScore=document.getElementById("finalScore");
 
-  <!-- ===== OVERLAY KẾT QUẢ ===== -->
-  <div
-    id="overlay"
-    class="fixed inset-0 bg-black bg-opacity-70 hidden items-center justify-center">
+/* ================== TIMER 90 PHÚT ================== */
+let time=90*60;
+const timerEl=document.getElementById("timer");
+const tInt=setInterval(()=>{
+  time--;
+  const m=String(Math.floor(time/60)).padStart(2,"0");
+  const s=String(time%60).padStart(2,"0");
+  timerEl.textContent=`${m}:${s}`;
+  if(time<=0){
+    clearInterval(tInt);
+    finish();
+  }
+},1000);
 
-    <div
-      id="result-box"
-      class="p-6 rounded-xl text-center w-72">
+function load(){
+  if(index>=QUESTIONS.length){finish();return;}
+  const q=QUESTIONS[index];
+  tagEl.textContent=q.tag+` | Câu ${index+1}`;
+  qEl.textContent=q.q;
+  aEl.innerHTML="";
+  q.a.forEach((txt,i)=>{
+    const d=document.createElement("div");
+    d.className="answer";
+    d.textContent=txt;
+    d.onclick=()=>choose(i,q.c,d);
+    aEl.appendChild(d);
+  });
+  progressEl.style.width=`${(index/QUESTIONS.length)*100}%`;
+}
 
-      <h2
-        id="result-title"
-        class="text-2xl font-bold mb-2">
-      </h2>
+function choose(i,c,el){
+  if(lock) return;
+  lock=true;
+  if(i===c){
+    el.classList.add("correct");
+    score+=1;
+  }else{
+    el.classList.add("wrong");
+    aEl.children[c].classList.add("correct");
+  }
+  scoreEl.textContent=score;
+  setTimeout(()=>{
+    lock=false;
+    index++;
+    load();
+  },500);
+}
 
-      <p
-        id="result-detail"
-        class="mb-4">
-      </p>
+function finish(){
+  gameEl.classList.add("hidden");
+  endEl.classList.remove("hidden");
+  finalScore.textContent=score;
+  localStorage.setItem("dgnl_best",Math.max(score,localStorage.getItem("dgnl_best")||0));
+}
 
-      <button
-        onclick="location.reload()"
-        class="px-4 py-2 bg-yellow-600 text-black font-bold rounded">
-        Chơi lại
-      </button>
-    </div>
-  </div>
-
-  <!-- JS -->
-  <script src="js/main.js"></script>
+load();
+</script>
 </body>
 </html>
