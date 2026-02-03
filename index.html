@@ -3,135 +3,98 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Đấu Trường ĐGNL Pro</title>
-    
+    <title>Chinh Phục ĐGNL - Summoner's Rift</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    
-    <link rel="icon" href="https://img.icons8.com/color/48/excalibur.png?v=2" type="image/x-icon">
-    <link rel="apple-touch-icon" href="https://img.icons8.com/color/144/excalibur.png?v=2">
-
     <style>
-        body { background-color: #010a13; color: #cdbe91; font-family: sans-serif; }
-        .lol-border { border: 2px solid #785a28; box-shadow: 0 0 15px #785a28; }
-        #hp-fill { transition: width 0.5s ease; background: linear-gradient(90deg, #28a745, #5cd65c); }
-        .hp-low { background: linear-gradient(90deg, #ff0000, #ff5e5e) !important; }
+        @import url('https://fonts.googleapis.com/css2?family=Beaufort+for+LOL:wght@700&display=swap');
+        body { font-family: 'Helvetica Neue', sans-serif; background: #010a13; }
+        .lol-header { font-family: 'Beaufort for LOL', serif; text-transform: uppercase; letter-spacing: 2px; }
+        #hp-fill { transition: width 0.4s ease-out; shadow: 0 0 10px #ff0000; }
+        .rank-icon { width: 50px; height: 50px; object-fit: contain; }
     </style>
 </head>
-    <div class="w-full max-w-md">
-        <h1 class="text-2xl font-bold mb-6 text-yellow-500 uppercase">⚔️ ĐẤU TRƯỜNG TỰ ĐỘNG</h1>
-        
-        <div class="mb-8">
-            <div class="flex justify-between text-xs mb-1 font-bold">
-                <span id="boss-name">Đang triệu hồi Boss...</span>
-                <span id="hp-text">100/100 HP</span>
-            </div>
-            <div class="w-full h-5 bg-gray-800 border border-gray-600 p-0.5">
-                <div id="hp-fill" class="h-full w-full"></div>
+<body class="text-gray-200 min-h-screen flex flex-col items-center p-4">
+
+    <div class="flex flex-col items-center mb-6">
+        <img src="https://brand.riotgames.com/static/a91000434f1b533e4d9f6973f5a04473/01_LoL_Logo_Fixed.png" alt="LoL Logo" class="w-40 mb-2">
+        <h1 class="lol-header text-2xl text-yellow-500 italic">Chinh Phục ĐGNL</h1>
+    </div>
+
+    <div class="flex items-center gap-4 bg-gray-900 p-3 rounded-lg border border-yellow-600 mb-6 w-full max-w-md">
+        <div id="rank-display" class="flex items-center gap-3">
+            <img id="rank-img" src="https://raw.communitydragon.org/latest/plugins/rcp-fe-lol-static-assets/global/default/images/ranked-emblems/emblem-bronze.png" class="rank-icon">
+            <div>
+                <p class="text-xs text-gray-400 uppercase font-bold">Bậc hiện tại</p>
+                <p id="rank-name" class="text-lg font-bold text-white">ĐỒNG ĐOÀN</p>
             </div>
         </div>
-
-        <div id="battle-box" class="lol-border bg-gray-900 p-6 rounded-lg min-h-[250px] flex flex-col justify-center">
-            <div id="status">Đang kết nối kho báu...</div>
-            <div id="quiz-area" class="hidden text-left">
-                <p id="question" class="mb-6 font-bold text-white text-lg"></p>
-                <div id="options" class="grid grid-cols-1 gap-3"></div>
-            </div>
+        <div class="ml-auto text-right">
+            <p class="text-xs text-gray-400 uppercase font-bold">Điểm LP</p>
+            <p id="lp-score" class="text-lg font-bold text-blue-400">0 LP</p>
         </div>
     </div>
 
+    <div class="w-full max-w-md mb-6">
+        <div class="flex justify-between mb-1 px-1">
+            <span class="text-red-500 font-bold uppercase text-xs">Boss: Nexus Crystal</span>
+            <span id="hp-text" class="text-xs font-bold">100 / 100 HP</span>
+        </div>
+        <div class="bg-gray-800 rounded-full h-4 border border-gray-700 overflow-hidden">
+            <div id="hp-fill" class="bg-gradient-to-r from-red-600 to-red-400 h-full" style="width: 100%;"></div>
+        </div>
+    </div>
+
+    <div id="game-box" class="bg-[#091428] p-6 rounded border-t-4 border-yellow-700 shadow-2xl w-full max-w-md border-x border-b border-gray-800">
+        <div id="subject-tag" class="text-[10px] bg-blue-900 text-blue-200 px-2 py-0.5 rounded w-fit mb-3 uppercase font-bold">Toán Học</div>
+        <h2 id="question-text" class="text-lg mb-6 leading-relaxed">Đang tải thử thách...</h2>
+        <div id="options" class="flex flex-col gap-3"></div>
+    </div>
+
+    <audio id="sound-correct" src="https://www.myinstants.com/media/sounds/tuturu_1.mp3"></audio>
+    <audio id="sound-victory" src="https://www.myinstants.com/media/sounds/pentakill-sound-effect.mp3"></audio>
+    <audio id="sound-rankup" src="https://www.myinstants.com/media/sounds/level-up-pings-league-of-legends.mp3"></audio>
+
     <script>
-        let database = [];
-        let hp = 100;
+        const database = [
+            { s: "Toán", q: "Tính đạo hàm của y = x² tại x = 3?", a: ["3", "6", "9", "2"], c: 1 },
+            { s: "Vật Lý", q: "Trong LMHT, tốc độ ánh sáng xấp xỉ bao nhiêu m/s?", a: ["3.10^8", "2.10^8", "3.10^7", "1.10^8"], c: 0 },
+            { s: "Tiếng Anh", q: "Dịch từ 'Legendary' sang tiếng Việt?", a: ["Huyền thoại", "Thần thoại", "Sử thi", "Vô địch"], c: 0 },
+            { s: "Toán", q: "Căn bậc hai của 144 là bao nhiêu?", a: ["10", "11", "12", "13"], c: 2 },
+            { s: "Vật Lý", q: "Đơn vị của điện trở là gì?", a: ["Vôn", "Ampe", "Ohm", "Watt"], c: 2 }
+        ];
+
         let currentIdx = 0;
+        let hp = 100;
+        let lp = 0;
 
-        async function loadQuestions() {
-            try {
-                // Lấy dữ liệu từ file trong thư mục Kho-Bau-Vat-Pham
-                const response = await fetch('./Kho-Bau-Vat-Pham/De-Toan-TFT-Style.md');
-                const text = await response.text();
-                
-                // Tách dòng và xử lý quy tắc dấu gạch đứng |
-                const lines = text.split('\n').filter(l => l.trim().includes('|'));
-                database = lines.map(line => {
-                    const parts = line.split('|');
-                    return { 
-                        question: parts[0], 
-                        answers: parts[1].split(','), 
-                        correct: parseInt(parts[2]) 
-                    };
-                });
+        const ranks = [
+            { name: "Đồng Đoàn", min: 0, img: "emblem-bronze.png" },
+            { name: "Bạc Đoàn", min: 40, img: "emblem-silver.png" },
+            { name: "Vàng Đoàn", min: 80, img: "emblem-gold.png" },
+            { name: "Bạch Kim", min: 120, img: "emblem-platinum.png" },
+            { name: "Thách Đấu", min: 200, img: "emblem-challenger.png" }
+        ];
 
-                if(database.length > 0) {
-                    document.getElementById('status').classList.add('hidden');
-                    document.getElementById('quiz-area').classList.remove('hidden');
-                    document.getElementById('boss-name').innerText = "BOSS: MA TRẬN ĐỀ THI";
-                    renderQuestion();
-                } else {
-                    document.getElementById('status').innerText = "Kho báu trống! Hãy kiểm tra file .md";
-                }
-            } catch (e) {
-                document.getElementById('status').innerText = "Lỗi: Không kết nối được kho báu!";
-                console.error(e);
+        function updateRank() {
+            let currentRank = ranks[0];
+            ranks.forEach(r => { if (lp >= r.min) currentRank = r; });
+            
+            const oldRank = document.getElementById('rank-name').innerText;
+            document.getElementById('rank-name').innerText = currentRank.name;
+            document.getElementById('rank-img').src = `https://raw.communitydragon.org/latest/plugins/rcp-fe-lol-static-assets/global/default/images/ranked-emblems/${currentRank.img}`;
+            
+            if (oldRank !== currentRank.name && lp > 0) {
+                document.getElementById('sound-rankup').play();
             }
         }
 
         function renderQuestion() {
             const data = database[currentIdx];
-            document.getElementById('question').innerText = data.question;
+            document.getElementById('subject-tag').innerText = data.s;
+            document.getElementById('question-text').innerText = data.q;
             const optionsDiv = document.getElementById('options');
             optionsDiv.innerHTML = '';
-            
-            data.answers.forEach((ans, i) => {
+
+            data.a.forEach((ans, i) => {
                 const btn = document.createElement('button');
-                btn.className = "p-3 border border-gray-700 bg-gray-800 hover:bg-yellow-900 text-left text-sm text-gray-200";
-                btn.innerText = `${String.fromCharCode(65 + i)}. ${ans.trim()}`;
-                btn.onclick = () => checkAnswer(i);
-                optionsDiv.appendChild(btn);
-            });
-        }
-
-        function checkAnswer(idx) {
-            if(idx === database[currentIdx].correct) {
-                hp -= Math.ceil(100 / database.length);
-                alert("✨ CHÍNH XÁC! Boss bị trúng đòn.");
-            } else {
-                alert("💀 SAI RỒI! Bạn bị Boss phản công.");
-            }
-            
-            document.getElementById('hp-fill').style.width = Math.max(0, hp) + '%';
-            document.getElementById('hp-text').innerText = Math.max(0, hp) + '/100 HP';
-            
-            if(hp <= 0) {
-                alert("VICTORY! Bạn đã dọn sạch kho báu!");
-                location.reload();
-            } else {
-                currentIdx = (currentIdx + 1) % database.length;
-                renderQuestion();
-            }
-        }
-
-        loadQuestions();
-    </script>
-</body>
-</html>
-                </button>
-            </div>
-        </div>
-    </div>
-
-    <script>
-        let hp = 100;
-        function hit(dmg, text) {
-            hp = Math.max(0, hp - dmg);
-            document.getElementById('hp-fill').style.width = hp + '%';
-            document.getElementById('hp-text').innerText = hp + '/100 HP';
-            document.getElementById('msg').innerText = text;
-            if(hp === 0) {
-                alert("CHIẾN THẮNG! Bạn đã quét sạch Summoner's Rift!");
-                hp = 100;
-                location.reload();
-            }
-        }
-    </script>
-</body>
-</html>
+                btn.className = "p-3 text-left border border-[#1e2328] bg-[#1e2328] hover:
